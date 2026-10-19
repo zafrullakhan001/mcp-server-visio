@@ -7,10 +7,10 @@ All tools follow the conventions in STYLE_GUIDE.md automatically.
 
 import json
 from mcp.server.fastmcp import FastMCP
-from visio_client import VisioClient
+from visio_client import VisioWorker
 
 mcp = FastMCP(name="Visio Diagram Server")
-visio = VisioClient()
+visio = VisioWorker()
 
 
 # ── Document Management ──────────────────────────────────────
@@ -20,7 +20,7 @@ visio = VisioClient()
 def create_diagram(template: str = "") -> str:
     """
     Create a new Visio diagram.
-    The page is automatically set to **landscape** (11 × 8.5 in) per the style guide.
+    Blank drawings use landscape (11 x 8.5 in). Supplied template dimensions are preserved.
 
     Args:
         template: Optional Visio template name or path (e.g. "Basic Diagram.vstx").
@@ -389,7 +389,112 @@ def export_page(file_path: str) -> str:
     return f"Exported to: {path}"
 
 
+# ── Mermaid workflow ─────────────────────────────────────────
+
+
+@mcp.tool()
+def inspect_template(template: str) -> dict[str, object]:
+    """Inspect a local Visio template: dimensions, scale, pages, layers and MCP.* title fields.
+
+    Does not modify the template. Use an absolute .vstx, .vst or .vsdx path.
+    Organisation profiles reserve drawing space using margins/header_reserved/footer_reserved.
+    """
+    return visio.workflow("inspect_template", template)
+
+
+@mcp.tool()
+def resolve_stencil_mapping(
+    source: str, profile_path: str = "", mappings: dict[str, str] | None = None,
+) -> dict[str, object]:
+    """Parse Mermaid and preflight approved stencil masters before creating a drawing.
+
+    mappings maps Mermaid node IDs to canonical services (azure/sql-database),
+    profile catalogue keys, or basic/rectangle, basic/rounded_rectangle,
+    basic/circle, basic/diamond, basic/cylinder. Ambiguous aliases are errors.
+    """
+    return visio.workflow("resolve_stencil_mapping", source, profile_path, mappings)
+
+
+@mcp.tool()
+def plan_mermaid_diagram(
+    source: str, profile_path: str = "", template: str = "",
+    mappings: dict[str, str] | None = None, metadata: dict[str, str] | None = None,
+) -> dict[str, object]:
+    """Plan a supported Mermaid flowchart without creating a drawing.
+
+    Returns a plan_id, semantic graph, exact master mappings, template fingerprint,
+    organisation profile, layout in inches, and validation. Profiles are local JSON
+    files overriding organisation_profile.json. Templates must have 1:1 drawing scale.
+    No generic substitution occurs for explicitly mapped or ambiguous services.
+    Plans expire after server restart or cache eviction (32 plans).
+    """
+    return visio.workflow("plan_mermaid_diagram", source, profile_path, template, mappings, metadata)
+
+
+@mcp.tool()
+def render_diagram_plan(plan_id: str, file_path: str = "", preview_path: str = "") -> dict[str, object]:
+    """Render a cached plan as native Visio shapes in a new document.
+
+    Returns explicit document_id/page_id and validation findings. A failed render
+    rolls back and closes only the new document. Optional outputs must be new paths
+    in existing directories: .vsdx drawing and .png/.svg/.jpg preview.
+    needs_review means automated checks passed but visual review is still required.
+    """
+    return visio.workflow("render_diagram_plan", plan_id, file_path, preview_path)
+
+
+@mcp.tool()
+def create_from_mermaid(
+    source: str, profile_path: str = "", template: str = "",
+    mappings: dict[str, str] | None = None, metadata: dict[str, str] | None = None,
+    file_path: str = "", preview_path: str = "",
+) -> dict[str, object]:
+    """Plan, preflight, render and validate a Mermaid flowchart, optionally saving/exporting.
+
+    Supports flowchart/graph TB, TD, BT, LR, RL; nested named subgraphs;
+    rectangle, rounded, circle, diamond and cylinder nodes; chained arrows,
+    pipe-delimited edge labels, dashed/bidirectional/undirected links.
+    Other Mermaid syntax is rejected with a source location, never silently omitted.
+    Template artwork is preserved; title shapes named MCP.<metadata-key> are populated.
+    Official service icon artwork/aspect ratio are preserved. No LLM-guessed coordinates.
+    """
+    return visio.workflow("create_from_mermaid", source, profile_path, template, mappings, metadata,
+                          file_path, preview_path)
+
+
+@mcp.tool()
+def validate_diagram(document_id: int, page_id: int) -> dict[str, object]:
+    """Validate a managed Mermaid page by explicit IDs, including after save/reopen.
+
+    Checks nodes/edges, labels, masters, container membership, fonts, connector
+    attachment/styles, text height, overlaps and drawing bounds. Returns structured
+    findings; connector crossings and template artwork still require visual review.
+    """
+    return visio.workflow("validate_diagram", document_id, page_id)
+
+
+@mcp.tool()
+def update_from_mermaid(
+    document_id: int, page_id: int, source: str,
+    mappings: dict[str, str] | None = None, metadata: dict[str, str] | None = None,
+    preserve_manual_positions: bool = True, file_path: str = "", preview_path: str = "",
+) -> dict[str, object]:
+    """Replace only managed objects on a Mermaid page; retain template/user artwork.
+
+    Reuses persisted profile and mappings unless mappings/metadata are supplied.
+    Rebuilds managed objects (numeric Visio shape IDs can change). Manual component/
+    container positions are retained when possible; unsafe layouts fail before mutation.
+    Set preserve_manual_positions=false for a complete re-layout.
+    Update is one undo scope, rolled back on errors. Optional outputs use new paths.
+    """
+    return visio.workflow("update_from_mermaid", document_id, page_id, source, mappings, metadata,
+                          preserve_manual_positions, file_path, preview_path)
+
+
 # ── Entry Point ──────────────────────────────────────────────
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    try:
+        mcp.run(transport="stdio")
+    finally:
+        visio.shutdown()

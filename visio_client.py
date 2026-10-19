@@ -9,6 +9,10 @@ import win32com.client
 import os
 import pythoncom
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+
+from diagram_renderer import DiagramWorkflow
 
 
 # ── Azure stencil mapper (embedded) ─────────────────────────
@@ -135,6 +139,7 @@ class VisioClient:
         self._stencils = {}
         self._stencil_map = _load_stencil_map()
         self._stencil_paths_registered = False
+        self.workflow = DiagramWorkflow(self)
 
     @property
     def app(self):
@@ -201,8 +206,9 @@ class VisioClient:
         for root in roots:
             if not root.exists():
                 continue
-            for vssx in root.rglob("Azure-*.vssx"):
-                stencil_dirs.add(str(vssx.parent))
+            for vssx in root.rglob("*.vssx"):
+                if vssx.name.lower().startswith("azure"):
+                    stencil_dirs.add(str(vssx.parent))
 
         if stencil_dirs:
             # Append to any existing StencilPaths
@@ -225,12 +231,14 @@ class VisioClient:
         3. Fall back to explicit path from discovered directories
         """
         filename = f"{stencil_name}.vssx"
+        category = "".join(c for c in stencil_name if c.isalnum()).upper()
+        filenames = [filename, f"{category}_M.vssx", f"{category}_U.vssx"]
 
         # 1. Already open? (pure COM lookup)
         try:
             for i in range(1, self.app.Documents.Count + 1):
                 doc = self.app.Documents.Item(i)
-                if doc.Name.lower() == filename.lower():
+                if doc.Name.lower() in {name.lower() for name in filenames}:
                     self._stencils[filename] = doc
                     return doc
         except Exception:
@@ -238,19 +246,21 @@ class VisioClient:
 
         # 2. Register stencil paths from COM properties, then open by name
         self._register_stencil_paths()
-        try:
-            stencil = self.app.Documents.OpenEx(filename, 4)  # visOpenDocked
-            self._stencils[filename] = stencil
-            return stencil
-        except Exception:
-            pass
+        for candidate in filenames:
+            try:
+                stencil = self.app.Documents.OpenEx(candidate, 4)  # visOpenDocked
+                self._stencils[filename] = stencil
+                return stencil
+            except pythoncom.com_error:
+                continue
 
         # 3. Fallback: search roots for exact file and open by full path
         for root in _get_stencil_search_roots(self.app):
             if not root.exists():
                 continue
-            for vssx in root.rglob(filename):
-                return self._open_stencil(str(vssx))
+            for candidate in filenames:
+                for vssx in root.rglob(candidate):
+                    return self._open_stencil(str(vssx))
 
         raise RuntimeError(
             f"Azure stencil '{stencil_name}' not found. Ensure Azure Visio "
@@ -345,14 +355,12 @@ class VisioClient:
             doc = self.app.Documents.Add(template)
         else:
             doc = self.app.Documents.Add("")
-        # Set landscape orientation per STYLE_GUIDE.md
+        # A supplied template owns its page geometry.
         page = doc.Pages.Item(1)
-        try:
+        if not template:
             page.PageSheet.Cells("PageWidth").FormulaU = "11 in"
             page.PageSheet.Cells("PageHeight").FormulaU = "8.5 in"
             page.PageSheet.Cells("PrintPageOrientation").FormulaU = "2"  # landscape
-        except Exception:
-            pass
         return doc.Name
 
     def save_diagram(self, file_path: str) -> str:
@@ -380,6 +388,7 @@ class VisioClient:
             doc = self.app.Documents.Item(i)
             results.append({
                 "index": i,
+                "document_id": doc.ID,
                 "name": doc.Name,
                 "path": doc.FullName,
                 "pages": doc.Pages.Count,
@@ -889,7 +898,7 @@ class VisioClient:
         if not doc:
             raise RuntimeError("No active document.")
         return [
-            {"index": i, "name": doc.Pages.Item(i).Name}
+            {"index": i, "page_id": doc.Pages.Item(i).ID, "name": doc.Pages.Item(i).Name}
             for i in range(1, doc.Pages.Count + 1)
         ]
 
@@ -910,3 +919,36 @@ class VisioClient:
         """Release COM references (does NOT close Visio)."""
         self._stencils.clear()
         self._app = None
+
+
+class VisioWorker:
+    """Serialize legacy tools and workflow operations on one COM apartment."""
+
+    def __init__(self):
+        self._executor = ThreadPoolExecutor(max_workers=1, initializer=pythoncom.CoInitialize)
+        self._client: VisioClient | None = None
+
+    def _invoke(self, method: str, args: tuple, kwargs: dict, workflow: bool = False):
+        if self._client is None:
+            self._client = VisioClient()
+        target = self._client.workflow if workflow else self._client
+        return getattr(target, method)(*args, **kwargs)
+
+    def __getattr__(self, method: str):
+        return partial(self.call, method)
+
+    def call(self, method: str, *args, **kwargs):
+        return self._executor.submit(self._invoke, method, args, kwargs).result()
+
+    def workflow(self, method: str, *args, **kwargs):
+        return self._executor.submit(self._invoke, method, args, kwargs, True).result()
+
+    def shutdown(self):
+        def release():
+            if self._client is not None:
+                self._client.quit()
+                self._client = None
+            pythoncom.CoUninitialize()
+
+        self._executor.submit(release).result()
+        self._executor.shutdown()

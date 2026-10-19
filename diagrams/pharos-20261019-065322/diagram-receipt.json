@@ -1,0 +1,245 @@
+{
+  "file": "C:\\xampp\\htdocs\\MyVisMCP\\diagrams\\pharos-20261019-065322\\Pharos-Architecture-Final.vsdx",
+  "pages": 1,
+  "native_icons": [
+    {
+      "stencil": "PERIPH_M.VSSX",
+      "shape_id": 10,
+      "master": "Smart phone"
+    },
+    {
+      "stencil": "PERIPH_M.VSSX",
+      "shape_id": 35,
+      "master": "Ethernet"
+    },
+    {
+      "stencil": "COMPS_M.VSSX",
+      "shape_id": 43,
+      "master": "PC"
+    },
+    {
+      "stencil": "NETLOC_M.VSSX",
+      "shape_id": 72,
+      "master": "Cloud"
+    },
+    {
+      "stencil": "SERVER_M.VSSX",
+      "shape_id": 82,
+      "master": "Management server"
+    },
+    {
+      "stencil": "SERVER_M.VSSX",
+      "shape_id": 123,
+      "master": "Print server"
+    },
+    {
+      "stencil": "PERIPH_M.VSSX",
+      "shape_id": 156,
+      "master": "Printer"
+    },
+    {
+      "stencil": "PERIPH_M.VSSX",
+      "shape_id": 173,
+      "master": "Multi-function device"
+    },
+    {
+      "stencil": "NETSYM_M.VSSX",
+      "shape_id": 196,
+      "master": "Lock"
+    },
+    {
+      "stencil": "SERVER_M.VSSX",
+      "shape_id": 209,
+      "master": "Directory server"
+    }
+  ],
+  "validation": {
+    "labels_verified": true,
+    "status": "passed",
+    "glued_connections": 12,
+    "reopened": true,
+    "expected_connections": 12,
+    "route_crossings": 0,
+    "overlapping_route_segments": 0,
+    "horizontal_labels": true
+  },
+  "connections": [
+    {
+      "shape_id": 241,
+      "to": "CLOUD",
+      "from": "MOBILE",
+      "label": "Cloud API / HTTPS\nTCP 443",
+      "points": [
+        2.35,
+        11.475,
+        2.35,
+        9.1
+      ],
+      "id": "API_MOBILE"
+    },
+    {
+      "shape_id": 242,
+      "to": "CLOUD",
+      "from": "ETH241",
+      "label": "Cloud API / HTTPS\nTCP 443",
+      "points": [
+        5.4,
+        11.475,
+        5.4,
+        9.1
+      ],
+      "id": "API_ETH241"
+    },
+    {
+      "shape_id": 243,
+      "to": "CLOUD",
+      "from": "WS",
+      "label": "Cloud API\nHTTPS / TCP 443",
+      "points": [
+        7.8,
+        12.4,
+        7.0,
+        12.4,
+        7.0,
+        8.8,
+        6.4,
+        8.8
+      ],
+      "id": "API_WS"
+    },
+    {
+      "shape_id": 244,
+      "to": "CLOUD",
+      "from": "DS",
+      "label": "Cloud API\nHTTPS / TCP 443",
+      "points": [
+        7.8,
+        8.3,
+        6.4,
+        8.3
+      ],
+      "id": "API_DS"
+    },
+    {
+      "shape_id": 245,
+      "to": "CLOUD",
+      "from": "SPS",
+      "label": "Cloud API\nHTTPS / TCP 443",
+      "points": [
+        7.8,
+        5.6,
+        6.4,
+        5.6
+      ],
+      "id": "API_SPS"
+    },
+    {
+      "shape_id": 246,
+      "to": "ALLPR",
+      "from": "WS",
+      "label": "Direct delivery\nTCP 443, 631, 9100",
+      "points": [
+        12.2,
+        12.85,
+        14.1,
+        12.85,
+        14.1,
+        11.65,
+        15.8,
+        11.65
+      ],
+      "id": "DIRECT"
+    },
+    {
+      "shape_id": 247,
+      "to": "ALLPR",
+      "from": "WS",
+      "label": "Device data\nSNMP UDP 161",
+      "points": [
+        12.2,
+        12.05,
+        13.4,
+        12.05,
+        13.4,
+        10.85,
+        15.8,
+        10.85
+      ],
+      "id": "POLL_WS"
+    },
+    {
+      "shape_id": 248,
+      "to": "ALLPR",
+      "from": "DS",
+      "label": "Device data\nSNMP UDP 161",
+      "points": [
+        12.2,
+        8.3,
+        14.5,
+        8.3,
+        14.5,
+        9.7,
+        15.8,
+        9.7
+      ],
+      "id": "POLL_DS"
+    },
+    {
+      "shape_id": 249,
+      "to": "ALLPR",
+      "from": "SPS",
+      "label": "Server-mode delivery\nTCP 443, 631, 9100",
+      "points": [
+        12.2,
+        5.9,
+        15.1,
+        5.9,
+        15.1,
+        9.2,
+        15.8,
+        9.2
+      ],
+      "id": "SERVER_PRINT"
+    },
+    {
+      "shape_id": 250,
+      "to": "SPS",
+      "from": "SECURE",
+      "label": "Printer-initiated release\nTCP 4321",
+      "points": [
+        15.8,
+        4.8,
+        12.2,
+        4.8
+      ],
+      "id": "RELEASE"
+    },
+    {
+      "shape_id": 251,
+      "to": "GTM",
+      "from": "SECURE",
+      "label": "DNS lookup\nPort not specified",
+      "points": [
+        17.15,
+        4.0,
+        17.15,
+        2.325
+      ],
+      "id": "DNS_LOOKUP"
+    },
+    {
+      "shape_id": 252,
+      "to": "SECURE",
+      "from": "GTM",
+      "label": "DNS answer\nPort not specified",
+      "points": [
+        20.45,
+        2.325,
+        20.45,
+        4.0
+      ],
+      "id": "DNS_ANSWER"
+    }
+  ],
+  "source": "User-supplied Mermaid; no vendor, protocol, role, or DNS port inferred."
+}

@@ -1,2 +1,3 @@
 mcp[cli]<2
 pywin32
+lark>=1.2,<2

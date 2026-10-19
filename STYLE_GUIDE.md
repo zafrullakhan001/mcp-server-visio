@@ -1,5 +1,24 @@
 # Visio Architecture Diagram — Style Guide
 
+## Enforcement
+
+The legacy drawing helpers implement the defaults below. The Mermaid workflow
+uses [organisation_profile.json](organisation_profile.json), or the profile passed
+to its tools, as its runtime policy. Update the JSON profile to change enforcement;
+editing this document alone does not change generated diagrams.
+
+For Mermaid imports, official service icon artwork and aspect ratios take priority
+over generic component fill/rounding rules. Labels, native containers, and
+connectors use the organisation profile. Blank pages default to 11 x 8.5 inches;
+supplied template dimensions/backgrounds are preserved unless the profile explicitly
+overrides page size. Profile margins and reserved header/footer space define the
+drawing region. Inputs cannot bypass policy through Mermaid style directives.
+
+Automated validation is not visual certification: inspect the exported preview
+for connector crossings, edge-label placement, and template-artwork collisions.
+See [README.md](README.md#mermaid-to-organisation-standard-visio) for supported
+syntax, strict mapping behaviour, validation, and update limitations.
+
 ## Stencils
 
 - Always use **real Azure stencil icons** from Visio's built-in stencils (e.g. `AZURECOMPUTE_M.VSSX`, `AZURENETWORKING_M.VSSX`, `AZUREDATABASES_M.VSSX`, `AZURESTORAGE_M.VSSX`, etc.)

@@ -1,0 +1,357 @@
+{
+  "output": "C:\\xampp\\htdocs\\MyVisMCP\\diagrams\\pharos-20261019-055203",
+  "tools": [
+    "create_diagram",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_container",
+    "add_shape",
+    "add_container",
+    "add_shape",
+    "add_container",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_container",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "connect_shapes",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "add_shape",
+    "list_shapes",
+    "save_diagram",
+    "export_page",
+    "export_page"
+  ],
+  "nodes": {
+    "title": 1,
+    "subtitle": 2,
+    "CLOUD": 3,
+    "CLIENTS_heading": 5,
+    "SERVERS_heading": 7,
+    "FLEET_heading": 9,
+    "WS": 10,
+    "MOBILE": 11,
+    "ETH241": 12,
+    "DS": 13,
+    "SPS": 14,
+    "ALLPR": 15,
+    "SECURE": 16,
+    "FAILOVER_heading": 18,
+    "GTM": 19,
+    "VMSPEC": 20,
+    "API_NOTE": 21,
+    "direct_label": 34,
+    "poll_label": 35,
+    "ds_poll_label": 36,
+    "server_print_label": 37,
+    "release_label": 38,
+    "lookup_label": 39,
+    "answer_label": 40,
+    "api_ws_label": 41,
+    "api_ds_label": 42,
+    "api_sps_label": 43,
+    "api_mobile_label": 44,
+    "api_eth_label": 45,
+    "PORTS": 46,
+    "LEGEND": 47,
+    "footer": 48
+  },
+  "edges": [
+    {
+      "id": "API_WS",
+      "from": "WS",
+      "to": "CLOUD",
+      "points": [
+        [
+          3.2,
+          11.575
+        ],
+        [
+          3.2,
+          13.27
+        ]
+      ],
+      "shape_id": 22
+    },
+    {
+      "id": "API_MOBILE",
+      "from": "MOBILE",
+      "to": "CLOUD",
+      "points": [
+        [
+          1.075,
+          8.72
+        ],
+        [
+          0.48,
+          8.72
+        ],
+        [
+          0.48,
+          13.55
+        ],
+        [
+          0.7,
+          13.55
+        ]
+      ],
+      "shape_id": 23
+    },
+    {
+      "id": "API_ETH241",
+      "from": "ETH241",
+      "to": "CLOUD",
+      "points": [
+        [
+          1.075,
+          6.95
+        ],
+        [
+          0.23,
+          6.95
+        ],
+        [
+          0.23,
+          14.08
+        ],
+        [
+          0.7,
+          14.08
+        ]
+      ],
+      "shape_id": 24
+    },
+    {
+      "id": "API_DS",
+      "from": "DS",
+      "to": "CLOUD",
+      "points": [
+        [
+          9.25,
+          11.575
+        ],
+        [
+          9.25,
+          13.27
+        ]
+      ],
+      "shape_id": 25
+    },
+    {
+      "id": "API_SPS",
+      "from": "SPS",
+      "to": "CLOUD",
+      "points": [
+        [
+          11.825,
+          8.65
+        ],
+        [
+          12.65,
+          8.65
+        ],
+        [
+          12.65,
+          13.27
+        ]
+      ],
+      "shape_id": 26
+    },
+    {
+      "id": "DIRECT_PRINT",
+      "from": "WS",
+      "to": "ALLPR",
+      "points": [
+        [
+          5.325,
+          11.18
+        ],
+        [
+          6.15,
+          11.18
+        ],
+        [
+          6.15,
+          12.65
+        ],
+        [
+          15.0,
+          12.65
+        ],
+        [
+          15.0,
+          11.35
+        ],
+        [
+          15.725,
+          11.35
+        ]
+      ],
+      "shape_id": 27
+    },
+    {
+      "id": "WS_SNMP",
+      "from": "WS",
+      "to": "ALLPR",
+      "points": [
+        [
+          5.325,
+          10.65
+        ],
+        [
+          5.85,
+          10.65
+        ],
+        [
+          5.85,
+          12.2
+        ],
+        [
+          14.6,
+          12.2
+        ],
+        [
+          14.6,
+          10.98
+        ],
+        [
+          15.725,
+          10.98
+        ]
+      ],
+      "shape_id": 28
+    },
+    {
+      "id": "DS_SNMP",
+      "from": "DS",
+      "to": "ALLPR",
+      "points": [
+        [
+          11.825,
+          10.65
+        ],
+        [
+          15.725,
+          10.65
+        ]
+      ],
+      "shape_id": 29
+    },
+    {
+      "id": "SERVER_PRINT",
+      "from": "SPS",
+      "to": "ALLPR",
+      "points": [
+        [
+          11.825,
+          8.95
+        ],
+        [
+          14.15,
+          8.95
+        ],
+        [
+          14.15,
+          10.35
+        ],
+        [
+          15.725,
+          10.35
+        ]
+      ],
+      "shape_id": 30
+    },
+    {
+      "id": "SECURE_RELEASE",
+      "from": "SECURE",
+      "to": "SPS",
+      "points": [
+        [
+          15.725,
+          7.6
+        ],
+        [
+          11.825,
+          7.6
+        ]
+      ],
+      "shape_id": 31
+    },
+    {
+      "id": "DNS_LOOKUP",
+      "from": "SECURE",
+      "to": "GTM",
+      "points": [
+        [
+          17.35,
+          6.825
+        ],
+        [
+          17.35,
+          5.17
+        ]
+      ],
+      "shape_id": 32
+    },
+    {
+      "id": "DNS_ANSWER",
+      "from": "GTM",
+      "to": "SECURE",
+      "points": [
+        [
+          21.15,
+          5.17
+        ],
+        [
+          21.15,
+          6.825
+        ]
+      ],
+      "shape_id": 33
+    }
+  ],
+  "shape_count": 48,
+  "relationship_count": 12,
+  "document": "C:\\xampp\\htdocs\\MyVisMCP\\diagrams\\pharos-20261019-055203\\Pharos-Secure-Release-Architecture.vsdx",
+  "png": "C:\\xampp\\htdocs\\MyVisMCP\\diagrams\\pharos-20261019-055203\\Pharos-Secure-Release-Architecture.png",
+  "svg": "C:\\xampp\\htdocs\\MyVisMCP\\diagrams\\pharos-20261019-055203\\Pharos-Secure-Release-Architecture.svg",
+  "verification": {
+    "native_connector_routes": 12,
+    "geometry_points_match_source": true,
+    "all_relationships_retained": true,
+    "visual_review": "PNG inspected; connector geometry corrected; labels separated from unrelated routes"
+  }
+}
